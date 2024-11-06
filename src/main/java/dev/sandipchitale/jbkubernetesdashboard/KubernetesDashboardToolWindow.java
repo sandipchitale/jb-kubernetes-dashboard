@@ -239,20 +239,22 @@ public class KubernetesDashboardToolWindow {
             // Create service account if absent
             ServiceAccount serviceAccount = kubernetesClient.serviceAccounts().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SERVICE_ACCOUNT).get();
             if (serviceAccount == null) {
-                serviceAccount = kubernetesClient.serviceAccounts().load(SERVICE_ACCOUNT_MANIFEST_PATH).get();
+//                serviceAccount = kubernetesClient.serviceAccounts().load(SERVICE_ACCOUNT_MANIFEST_PATH).get();
+                CommandLauncher.launch("kubectl apply -n " + KUBERNETES_DASHBOARD + " -f " + SERVICE_ACCOUNT_MANIFEST_PATH);
             }
             // Create cluster role binding if absent
             ClusterRoleBinding clusterRoleBinding = kubernetesClient.rbac().clusterRoleBindings().withName(ADMIN_USER_CLUSTER_ROLE_BINDING).get();
             if (clusterRoleBinding == null) {
-                clusterRoleBinding = kubernetesClient.rbac().clusterRoleBindings().load(CLUSTER_ROLE_BINDING_MANIFEST_PATH).get();
+//                clusterRoleBinding = kubernetesClient.rbac().clusterRoleBindings().load(CLUSTER_ROLE_BINDING_MANIFEST_PATH).get();
+                CommandLauncher.launch("kubectl apply -f " + CLUSTER_ROLE_BINDING_MANIFEST_PATH);
+
             }
             // Create secret if absent
             Secret secret = kubernetesClient.secrets().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SECRET).get();
             if (secret == null) {
-                secret = kubernetesClient.secrets().load(SECRET_MANIFEST_PATH).get();
+//                secret = kubernetesClient.secrets().load(SECRET_MANIFEST_PATH).get();
+                CommandLauncher.launch("kubectl apply -n " + KUBERNETES_DASHBOARD + " -f " + SECRET_MANIFEST_PATH);
             }
-
-            System.out.println();
         } else {
             Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
         }
