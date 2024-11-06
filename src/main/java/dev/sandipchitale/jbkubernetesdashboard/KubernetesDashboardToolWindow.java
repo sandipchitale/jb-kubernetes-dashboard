@@ -251,11 +251,8 @@ public class KubernetesDashboardToolWindow {
 
     private void portForward(ActionEvent actionEvent) {
         if (isConnected()) {
-            kubernetesClient.pods().inNamespace(KUBERNETES_DASHBOARD).list().getItems().forEach((Pod pod) -> {
-                if (KUBERNETES_DASHBOARD.equals(pod.getMetadata().getLabels().get("app.kubernetes.io/name"))) {
-                    CommandLauncher.launch("kubectl port-forward -n " + KUBERNETES_DASHBOARD + " " + pod.getMetadata().getName() + " 8443:8443");
-                }
-            });
+            // Port forward to service
+            CommandLauncher.launch("kubectl port-forward -n " + KUBERNETES_DASHBOARD + " service/" + KUBERNETES_DASHBOARD +" 8443:443");
         } else {
             Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
         }
