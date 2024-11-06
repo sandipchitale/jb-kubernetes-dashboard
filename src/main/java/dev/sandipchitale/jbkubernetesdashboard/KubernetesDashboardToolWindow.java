@@ -289,7 +289,6 @@ public class KubernetesDashboardToolWindow {
         if (isConnected()) {
             browser.loadURL(KUBERNETES_DASHBOARD_URL);
             copyTokenToClipBoard(actionEvent);
-            Messages.showInfoMessage("Token copied to clipboard. Paste it in the login screen.", "Token Copied");
         } else {
             Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
         }
@@ -305,6 +304,7 @@ public class KubernetesDashboardToolWindow {
             } else {
                 String token = new String(Base64.getDecoder().decode(secret.getData().get("token")), StandardCharsets.UTF_8);
                 CopyPasteManager.getInstance().setContents(new StringSelection(token));
+                Messages.showInfoMessage("Token copied to clipboard. Paste it in the login screen.", "Token Copied");
             }
         } else {
             Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
