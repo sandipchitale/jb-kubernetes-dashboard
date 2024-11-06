@@ -155,7 +155,7 @@ public class KubernetesDashboardToolWindow {
         portForwardButton.addActionListener(this::portForward);
         topRightToolBar.add(portForwardButton);
 
-        loadKubernetesDashboardButton = new JButton("4", AllIcons.Actions.OpenNewTab);
+        loadKubernetesDashboardButton = new JButton("4", AllIcons.General.Web);
         loadKubernetesDashboardButton.setToolTipText("Open Kubernetes Dashboard at " + KUBERNETES_DASHBOARD_URL);
         loadKubernetesDashboardButton.addActionListener(this::loadKubernetesDashboard);
         topRightToolBar.add(loadKubernetesDashboardButton);
