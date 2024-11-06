@@ -16,7 +16,7 @@ configurations.all {
     exclude("org.slf4j")
 }
 dependencies {
-    implementation ("io.fabric8:kubernetes-client:6.13.3")
+    implementation ("io.fabric8:kubernetes-client:6.13.4")
 }
 
 // Configure Gradle IntelliJ Plugin
