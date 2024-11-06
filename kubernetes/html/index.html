@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Kubernetes Dashbpard Plugin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h1>Kubernetes Dashboard Plugin</h1>
+    <br/>
+    <br/>
+    <p>Execute to following steps to deploy and use the Kubernetes Dashboard:</p>
+    <br/>
+    <ul>
+        <li>Connect to the cluster.</li>
+        <li>1. Prime the cluster.</li>
+        <li>2. Deploy the Kubernetes Dashboard Helm Chart.</li>
+        <li>3. Port forward 8443:8443 from the Kubernetes Dashboard POD.</li>
+        <li>4. Open Kubernetes Dashboard in embedded browser. This also copies the required token to the clipboard.</li>
+        <li>4.1 Recopy the token to clipboard.</li>
+        <li>5 Optionally, undeploy the Kubernetes Dashboard Helm Chart.</li>
+        <li>Disconnect from the cluster.</li>
+    </ul>
+</div>
+</body>
+</html>
