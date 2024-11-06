@@ -11,8 +11,8 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.jcef.JBCefBrowser;
 import com.intellij.ui.jcef.JBCefClient;
-import io.fabric8.kubernetes.api.model.Secret;
-import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import org.cef.browser.CefBrowser;
@@ -68,7 +68,12 @@ public class KubernetesDashboardToolWindow {
             "kubernetes-dashboard.tgz").toString();
 
     public static final String KUBERNETES_DASHBOARD = "kubernetes-dashboard";
+
+
+    public static final String ADMIN_USER_SERVICE_ACCOUNT = "admin-user";
+    public static final String ADMIN_USER_CLUSTER_ROLE_BINDING = "admin-user";
     public static final String ADMIN_USER_SECRET = "admin-user-secret";
+    
     public static final String KUBERNETES_DASHBOARD_URL_PREFIX = "https://127.0.0.1:8443";
     public static final String KUBERNETES_DASHBOARD_URL = KUBERNETES_DASHBOARD_URL_PREFIX + "/#/pod?namespace=" + KUBERNETES_DASHBOARD;
 
@@ -230,12 +235,24 @@ public class KubernetesDashboardToolWindow {
 
     private void primeCluster(ActionEvent actionEvent) {
         if (isConnected()) {
-            // Create service account
-            kubernetesClient.serviceAccounts().load(SERVICE_ACCOUNT_MANIFEST_PATH).get();
-            // Create cluster role binding
-            kubernetesClient.rbac().clusterRoleBindings().load(CLUSTER_ROLE_BINDING_MANIFEST_PATH).get();
-            // Create secret
-            kubernetesClient.secrets().load(SECRET_MANIFEST_PATH).get();
+            ensureKubernetesDashboardNamespace();
+            // Create service account if absent
+            ServiceAccount serviceAccount = kubernetesClient.serviceAccounts().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SERVICE_ACCOUNT).get();
+            if (serviceAccount == null) {
+                kubernetesClient.serviceAccounts().load(SERVICE_ACCOUNT_MANIFEST_PATH).get();
+            }
+            // Create cluster role binding if absent
+            ClusterRoleBinding clusterRoleBinding = kubernetesClient.rbac().clusterRoleBindings().withName(ADMIN_USER_CLUSTER_ROLE_BINDING).get();
+            if (clusterRoleBinding == null) {
+                clusterRoleBinding = kubernetesClient.rbac().clusterRoleBindings().load(CLUSTER_ROLE_BINDING_MANIFEST_PATH).get();
+            }
+            // Create secret if absent
+            Secret secret = kubernetesClient.secrets().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SECRET).get();
+            if (secret == null) {
+                secret = kubernetesClient.secrets().load(SECRET_MANIFEST_PATH).get();
+            }
+
+            System.out.println();
         } else {
             Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
         }
@@ -243,6 +260,7 @@ public class KubernetesDashboardToolWindow {
 
     private void deployKubernetesDashboardHelmChart(ActionEvent actionEvent) {
         if (isConnected()) {
+            ensureKubernetesDashboardNamespace();
             CommandLauncher.launch("helm install -n " + KUBERNETES_DASHBOARD + " " + KUBERNETES_DASHBOARD + " " + KUBERNETES_DASHBOARD_HELM_CHART_PATH);
         } else {
             Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
@@ -251,6 +269,7 @@ public class KubernetesDashboardToolWindow {
 
     private void portForward(ActionEvent actionEvent) {
         if (isConnected()) {
+            ensureKubernetesDashboardNamespace();
             Service service = kubernetesClient.services().inNamespace(KUBERNETES_DASHBOARD).withName(KUBERNETES_DASHBOARD).get();
             if (service == null) {
                 Messages.showErrorDialog("Cannot port forward as the service: " + KUBERNETES_DASHBOARD + " in namespace " + KUBERNETES_DASHBOARD + " is missing.",
@@ -276,6 +295,7 @@ public class KubernetesDashboardToolWindow {
 
     private void copyTokenToClipBoard(ActionEvent actionEvent) {
         if (isConnected()) {
+            ensureKubernetesDashboardNamespace();
             Secret secret = kubernetesClient.secrets().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SECRET).get();
             if (secret == null) {
                 Messages.showErrorDialog("Cannot get token as the secret: " + ADMIN_USER_SECRET + " in namespace " + KUBERNETES_DASHBOARD + " is missing.",
@@ -291,8 +311,23 @@ public class KubernetesDashboardToolWindow {
 
     private void undeployKubernetesDashboardHelmChart(ActionEvent actionEvent) {
         if (isConnected()) {
+            ensureKubernetesDashboardNamespace();
             CommandLauncher.launch("helm uninstall -n " + KUBERNETES_DASHBOARD + " " + KUBERNETES_DASHBOARD);
             browser.loadURL(INDEX);
+        } else {
+            Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
+        }
+    }
+
+
+    private void ensureKubernetesDashboardNamespace() {
+        if (isConnected()) {
+            Namespace kubernetesDashboardNamespace = kubernetesClient.namespaces().withName(KUBERNETES_DASHBOARD).get();
+            // Create if absent
+            if (kubernetesDashboardNamespace == null) {
+                kubernetesDashboardNamespace = new NamespaceBuilder().withNewMetadata().withName(KUBERNETES_DASHBOARD).endMetadata().build();
+                kubernetesClient.namespaces().resource(kubernetesDashboardNamespace).create();
+            }
         } else {
             Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
         }
