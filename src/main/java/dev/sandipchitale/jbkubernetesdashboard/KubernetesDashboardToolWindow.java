@@ -73,7 +73,7 @@ public class KubernetesDashboardToolWindow {
     public static final String ADMIN_USER_SERVICE_ACCOUNT = "admin-user";
     public static final String ADMIN_USER_CLUSTER_ROLE_BINDING = "admin-user";
     public static final String ADMIN_USER_SECRET = "admin-user-secret";
-    
+
     public static final String KUBERNETES_DASHBOARD_URL_PREFIX = "https://127.0.0.1:8443";
     public static final String KUBERNETES_DASHBOARD_URL = KUBERNETES_DASHBOARD_URL_PREFIX + "/#/pod?namespace=" + KUBERNETES_DASHBOARD;
 
@@ -239,7 +239,7 @@ public class KubernetesDashboardToolWindow {
             // Create service account if absent
             ServiceAccount serviceAccount = kubernetesClient.serviceAccounts().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SERVICE_ACCOUNT).get();
             if (serviceAccount == null) {
-                kubernetesClient.serviceAccounts().load(SERVICE_ACCOUNT_MANIFEST_PATH).get();
+                serviceAccount = kubernetesClient.serviceAccounts().load(SERVICE_ACCOUNT_MANIFEST_PATH).get();
             }
             // Create cluster role binding if absent
             ClusterRoleBinding clusterRoleBinding = kubernetesClient.rbac().clusterRoleBindings().withName(ADMIN_USER_CLUSTER_ROLE_BINDING).get();
