@@ -11,8 +11,8 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.jcef.JBCefBrowser;
 import com.intellij.ui.jcef.JBCefClient;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import org.cef.browser.CefBrowser;
@@ -251,8 +251,14 @@ public class KubernetesDashboardToolWindow {
 
     private void portForward(ActionEvent actionEvent) {
         if (isConnected()) {
+            Service service = kubernetesClient.services().inNamespace(KUBERNETES_DASHBOARD).withName(KUBERNETES_DASHBOARD).get();
+            if (service == null) {
+                Messages.showErrorDialog("Cannot port forward as the service: " + KUBERNETES_DASHBOARD + " in namespace " + KUBERNETES_DASHBOARD + " is missing.",
+                        "Service Unavailable");
+                return;
+            }
             // Port forward to service
-            CommandLauncher.launch("kubectl port-forward -n " + KUBERNETES_DASHBOARD + " service/" + KUBERNETES_DASHBOARD +" 8443:443");
+            CommandLauncher.launch("kubectl port-forward -n " + KUBERNETES_DASHBOARD + " service/" + KUBERNETES_DASHBOARD + " 8443:443");
         } else {
             Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
         }
