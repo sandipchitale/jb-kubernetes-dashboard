@@ -21,29 +21,43 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
             background-color: white;
             color: black;
+            line-height: 1.8rem;
+            padding-top: 2rem;
+        }
+        ol {
+            counter-reset: item;
+            padding-left: 10px;
+        }
+        li {
+            display: block
+        }
+        li:before {
+            content: counters(item, ".") " ";
+            counter-increment: item
         }
     </style>
 </head>
 <body>
 <div>
-    <h1>Kubernetes Dashboard Plugin</h1>
+    <h1><img width="32" src="kubernetes-dashboard.svg" alt="Kubernetes Dashboard Plugin"/> Kubernetes Dashboard Plugin</h1>
     <br/>
     <br/>
-    <p>Execute to following steps to deploy and use the Kubernetes Dashboard:</p>
+    <p>Execute to following steps to install Kubernetes Dashboard Helm Chart<br/>and use the Kubernetes Dashboard Web UI:</p>
     <br/>
-    <ul>
+    <ol>
         <li>Connect to the cluster.</li>
-        <li>1. Prime the cluster.</li>
-        <li>2. Deploy the Kubernetes Dashboard Helm Chart.</li>
-        <li>3. Port forward 8443:8443 from the Kubernetes Dashboard POD.</li>
-        <li>4. Open Kubernetes Dashboard in embedded browser. This also copies the required token to the clipboard.</li>
-        <li>4.1 Recopy the token to clipboard.</li>
-        <li>5 Optionally, undeploy the Kubernetes Dashboard Helm Chart.</li>
-        <li>Disconnect from the cluster.</li>
-    </ul>
+        <li>Prime the cluster. Creates <b>Service Account</b>, <b>Cluster Role Binding</b><br/>and a (token) <b>Secret</b> in <i>kubernetes-dashboard</i> namespace.</li>
+        <li>Install the Kubernetes Dashboard Helm Chart to deploy <b>Kubernetes Dashboard</b> Wb UI.</li>
+        <li>Port forward 8443:8443 from the Kubernetes Dashboard POD.</li>
+        <li>Open Kubernetes Dashboard in this tool window.<br/>This also copies the required token to the clipboard.</li>
+        <ol>
+            <li>Copy the token to clipboard.</li>
+        </ol>
+        <li>Optionally, undeploy the Kubernetes Dashboard Helm Chart.</li>
+        <li>When done disconnect from the cluster.</li>
+    </ol>
 </div>
 </body>
 </html>

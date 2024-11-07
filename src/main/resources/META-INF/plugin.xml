@@ -54,7 +54,7 @@
         <notificationGroup
                 id="kubernetesDashboardNotificationGroup"
                 toolWindowId="Kubernetes Dashboard"
-                displayType="BALLOON"
+                displayType="TOOL_WINDOW"
         />
     </extensions>
 </idea-plugin>
