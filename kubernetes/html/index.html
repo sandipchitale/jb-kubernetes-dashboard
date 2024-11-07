@@ -28,7 +28,9 @@
         }
         ol {
             counter-reset: item;
-            padding-left: 10px;
+        }
+        ol ol {
+                padding-left: 10px;
         }
         li {
             display: block
@@ -44,14 +46,14 @@
     <h1><img width="32" src="kubernetes-dashboard.svg" alt="Kubernetes Dashboard Plugin"/> Kubernetes Dashboard Plugin</h1>
     <br/>
     <br/>
-    <p>Execute to following steps to install Kubernetes Dashboard Helm Chart<br/>and use the Kubernetes Dashboard Web UI:</p>
+    <p>Execute to following steps to install Kubernetes Dashboard Helm Chart and use the Kubernetes Dashboard Web UI:</p>
     <br/>
     <ol>
         <li>Connect to the cluster.</li>
-        <li>Prime the cluster. Creates <b>Service Account</b>, <b>Cluster Role Binding</b><br/>and a (token) <b>Secret</b> in <i>kubernetes-dashboard</i> namespace.</li>
-        <li>Install the Kubernetes Dashboard Helm Chart to deploy <b>Kubernetes Dashboard</b> Wb UI.</li>
+        <li>Prime the cluster. Creates <b>Service Account</b>, <b>Cluster Role Binding</b> and a (token) <b>Secret</b> in <i>kubernetes-dashboard</i> namespace.</li>
+        <li>Install the Kubernetes Dashboard Helm Chart to deploy <b>Kubernetes Dashboard</b> Web UI.</li>
         <li>Port forward 8443:8443 from the Kubernetes Dashboard POD.</li>
-        <li>Open Kubernetes Dashboard in this tool window.<br/>This also copies the required token to the clipboard.</li>
+        <li>Open Kubernetes Dashboard in this tool window. This also copies the required token to the clipboard.</li>
         <ol>
             <li>Copy the token to clipboard.</li>
         </ol>
