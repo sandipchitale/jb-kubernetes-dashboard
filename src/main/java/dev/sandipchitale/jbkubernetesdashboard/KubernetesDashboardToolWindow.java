@@ -2,6 +2,8 @@ package dev.sandipchitale.jbkubernetesdashboard;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.plugins.PluginManagerCore;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.ide.CopyPasteManager;
@@ -91,10 +93,12 @@ public class KubernetesDashboardToolWindow {
     private final JButton disconnectFromCusterButton;
 
     private final JBCefBrowser browser;
+    private final Project project;
 
     private KubernetesClient kubernetesClient = null;
 
     public KubernetesDashboardToolWindow(@NotNull Project project) {
+        this.project = project;
         contentToolWindow = new SimpleToolWindowPanel(true, true);
 
         browser = new JBCefBrowser(INDEX);
@@ -255,8 +259,17 @@ public class KubernetesDashboardToolWindow {
 //                secret = kubernetesClient.secrets().load(SECRET_MANIFEST_PATH).get();
                 CommandLauncher.launch("kubectl apply -n " + KUBERNETES_DASHBOARD + " -f " + SECRET_MANIFEST_PATH);
             }
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Primed the cluster",
+                    String.format("Created Service Account: %s, Cluster Role Binding: %s, Secret: %s", ADMIN_USER_SERVICE_ACCOUNT, ADMIN_USER_CLUSTER_ROLE_BINDING, ADMIN_USER_SECRET),
+                    NotificationType.INFORMATION);
+            notification.notify(project);
         } else {
-            Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Not connected",
+                    "Not connected to the cluster! Connect first.",
+                    NotificationType.ERROR);
+            notification.notify(project);
         }
     }
 
@@ -264,8 +277,17 @@ public class KubernetesDashboardToolWindow {
         if (isConnected()) {
             ensureKubernetesDashboardNamespace();
             CommandLauncher.launch("helm install -n " + KUBERNETES_DASHBOARD + " " + KUBERNETES_DASHBOARD + " " + KUBERNETES_DASHBOARD_HELM_CHART_PATH);
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Installed kubernetes dashboard helm chart",
+                    String.format("Deployed Kubernetes Dashboard using Helm chart to %s namespace.", KUBERNETES_DASHBOARD),
+                    NotificationType.INFORMATION);
+            notification.notify(project);
         } else {
-            Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Not connected",
+                    "Not connected to the cluster! Connect first.",
+                    NotificationType.ERROR);
+            notification.notify(project);
         }
     }
 
@@ -280,8 +302,17 @@ public class KubernetesDashboardToolWindow {
             }
             // Port forward to service
             CommandLauncher.launch("kubectl port-forward -n " + KUBERNETES_DASHBOARD + " service/" + KUBERNETES_DASHBOARD + " 8443:443");
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Port forwarded",
+                    String.format("Forwarded port 8443 to port 443 of service %s.", KUBERNETES_DASHBOARD),
+                    NotificationType.INFORMATION);
+            notification.notify(project);
         } else {
-            Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Not connected",
+                    "Not connected to the cluster! Connect first.",
+                    NotificationType.ERROR);
+            notification.notify(project);
         }
     }
 
@@ -289,8 +320,17 @@ public class KubernetesDashboardToolWindow {
         if (isConnected()) {
             browser.loadURL(KUBERNETES_DASHBOARD_URL);
             copyTokenToClipBoard(actionEvent);
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Loaded kubernetes dashboard in tool window",
+                    String.format("Loaded kubernetes dashboard using URL: ", KUBERNETES_DASHBOARD_URL),
+                    NotificationType.INFORMATION);
+            notification.notify(project);
         } else {
-            Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Not connected",
+                    "Not connected to the cluster! Connect first.",
+                    NotificationType.ERROR);
+            notification.notify(project);
         }
     }
 
@@ -304,10 +344,18 @@ public class KubernetesDashboardToolWindow {
             } else {
                 String token = new String(Base64.getDecoder().decode(secret.getData().get("token")), StandardCharsets.UTF_8);
                 CopyPasteManager.getInstance().setContents(new StringSelection(token));
-                Messages.showInfoMessage("Token copied to clipboard. Paste it in the login screen.", "Token Copied");
+                Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                        "Token copied",
+                        "Token copied to clipboard. Paste it in the login screen.",
+                        NotificationType.INFORMATION);
+                notification.notify(project);
             }
         } else {
-            Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Not connected",
+                    "Not connected to the cluster! Connect first.",
+                    NotificationType.ERROR);
+            notification.notify(project);
         }
     }
 
@@ -316,8 +364,17 @@ public class KubernetesDashboardToolWindow {
             ensureKubernetesDashboardNamespace();
             CommandLauncher.launch("helm uninstall -n " + KUBERNETES_DASHBOARD + " " + KUBERNETES_DASHBOARD);
             browser.loadURL(INDEX);
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Uninstalled kubernetes dashboard helm chart",
+                    String.format("Undeployed Kubernetes Dashboard from %s namespace.", KUBERNETES_DASHBOARD),
+                    NotificationType.INFORMATION);
+            notification.notify(project);
         } else {
-            Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Not connected",
+                    "Not connected to the cluster! Connect first.",
+                    NotificationType.ERROR);
+            notification.notify(project);
         }
     }
 
@@ -331,7 +388,11 @@ public class KubernetesDashboardToolWindow {
                 kubernetesClient.namespaces().resource(kubernetesDashboardNamespace).create();
             }
         } else {
-            Messages.showErrorDialog("Not connected to the cluster! Connect first.", "Not Connected");
+            Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                    "Not connected",
+                    "Not connected to the cluster! Connect first.",
+                    NotificationType.ERROR);
+            notification.notify(project);
         }
     }
 }
