@@ -20,16 +20,17 @@
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
-    <depends optional="true" config-file="sh-terminal.xml">org.jetbrains.plugins.terminal</depends>
+    <depends optional="true" config-file="terminal.xml">org.jetbrains.plugins.terminal</depends>
+    <depends optional="true" config-file="kubernetes.xml">com.intellij.kubernetes</depends>
 
     <change-notes><![CDATA[
 <h2>New Features</h2>
 <ul>
-    <li></li>
+    <li>Integrate with <b>Kubernetes</b> extension tree nodes in Services tool window via <b>Show in Kubernetes Dashboard Web UI</b>action.</li>
 </ul>
 <h2>Features</h2>
 <ul>
-    <li></li>
+    <li>Load Kubernetes Dashboard in easy 5 steps.</li>
 </ul>
 <h2>Known Issues</h2>
 <ul>
@@ -57,4 +58,11 @@
                 displayType="TOOL_WINDOW"
         />
     </extensions>
+    <actions>
+        <action class="dev.sandipchitale.jbkubernetesdashboard.KubernetesDashboardAction"
+                id="ShowInKubernetesDashboard"
+                text="Show in Kubernetes Dashboard Web UI">
+            <add-to-group group-id="ServiceViewItemPopup" anchor="last"/>
+        </action>
+    </actions>
 </idea-plugin>

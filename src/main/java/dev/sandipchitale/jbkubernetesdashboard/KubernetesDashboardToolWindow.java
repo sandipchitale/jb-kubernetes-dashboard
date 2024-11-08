@@ -39,7 +39,7 @@ import java.util.Objects;
 public class KubernetesDashboardToolWindow {
 
     // Paths to various files
-    private static final String INDEX = Path.of(
+    static final String INDEX = Path.of(
             Objects.requireNonNull(PluginManagerCore.getPlugin(PluginId.getId("dev.sandipchitale.jb-kubernetes-dashboard"))).getPluginPath().toString(),
             "kubernetes",
             "html",
@@ -132,6 +132,8 @@ public class KubernetesDashboardToolWindow {
         }, browser.getCefBrowser());
 
         contentToolWindow.add(browser.getComponent(), BorderLayout.CENTER);
+
+        contentToolWindow.putClientProperty("browser", browser);
 
         JPanel toolbarsWrapper = new JPanel(new GridLayout(1, 1));
 
@@ -231,6 +233,10 @@ public class KubernetesDashboardToolWindow {
 
     public @Nullable JComponent getContent() {
         return contentToolWindow;
+    }
+
+    JBCefBrowser getBrowser() {
+        return browser;
     }
 
     private boolean isConnected() {
@@ -377,7 +383,6 @@ public class KubernetesDashboardToolWindow {
             notification.notify(project);
         }
     }
-
 
     private void ensureKubernetesDashboardNamespace() {
         if (isConnected()) {

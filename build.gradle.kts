@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "dev.sandipchitale"
-version = "1.0.8"
+version = "1.0.9"
 
 repositories {
     mavenCentral()
@@ -25,7 +25,7 @@ intellij {
     version.set("2023.2.6")
     type.set("IC") // Target IDE Platform
 
-    plugins.set(listOf("terminal"))
+    plugins.set(listOf("terminal", "com.intellij.kubernetes:232.10203.2"))
 }
 
 tasks {
