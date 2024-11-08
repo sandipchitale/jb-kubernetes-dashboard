@@ -26,7 +26,7 @@
     <change-notes><![CDATA[
 <h2>New Features</h2>
 <ul>
-    <li>Integrate with <b>Kubernetes</b> extension tree nodes in Services tool window via <b>Show in Kubernetes Dashboard Web UI</b>action.</li>
+    <li>Integrate with <b>Kubernetes</b> extension tree nodes in Services tool window via <b>Show in Kubernetes Dashboard Web UI</b> action. <b>IMPORTANT: This action will not work if Kubernetes extension is not available.</b></li>
 </ul>
 <h2>Features</h2>
 <ul>
@@ -34,7 +34,7 @@
 </ul>
 <h2>Known Issues</h2>
 <ul>
-    <li></li>
+    <li><b>Show in Kubernetes Dashboard Web UI</b> action only works when Kubernetes extension is available.</li>
 </ul>
 <h2>Bug Fixes</h2>
 <ul>
