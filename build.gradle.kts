@@ -7,16 +7,16 @@ plugins {
 }
 
 group = "dev.sandipchitale"
-version = "1.0.10"
+version = "1.0.12"
 
 repositories {
     mavenCentral()
 }
 
-
 configurations.all {
     exclude("org.slf4j")
 }
+
 dependencies {
     implementation ("io.fabric8:kubernetes-client:6.13.4")
 }

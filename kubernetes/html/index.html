@@ -26,16 +26,24 @@
             line-height: 1.8rem;
             padding-top: 2rem;
         }
+
+        ul li {
+            list-style-type: none;
+        }
+
         ol {
             counter-reset: item;
         }
+
         ol ol {
-                padding-left: 10px;
+            padding-left: 10px;
         }
-        li {
+
+        ol li {
             display: block
         }
-        li:before {
+
+        ol li:before {
             content: counters(item, ".") " ";
             counter-increment: item
         }
@@ -43,23 +51,31 @@
 </head>
 <body>
 <div>
-    <h1><img width="32" src="kubernetes-dashboard.svg" alt="Kubernetes Dashboard Plugin"/> Kubernetes Dashboard Plugin</h1>
+    <h1><img width="28" src="kubernetes-dashboard.svg" alt="Kubernetes Dashboard Plugin"/> Kubernetes Dashboard Plugin
+    </h1>
     <br/>
-    <br/>
-    <p>Execute to following steps to install Kubernetes Dashboard Helm Chart and use the Kubernetes Dashboard Web UI:</p>
-    <br/>
-    <ol>
-        <li>Connect to the cluster.</li>
-        <li>Prime the cluster. Creates <b>Service Account</b>, <b>Cluster Role Binding</b> and a (token) <b>Secret</b> in <i>kubernetes-dashboard</i> namespace.</li>
-        <li>Install the Kubernetes Dashboard Helm Chart to deploy <b>Kubernetes Dashboard</b> Web UI.</li>
-        <li>Port forward 8443:8443 from the Kubernetes Dashboard POD.</li>
-        <li>Open Kubernetes Dashboard in this tool window. This also copies the required token to the clipboard.</li>
-        <ol>
-            <li>Copy the token to clipboard.</li>
-        </ol>
-        <li>Optionally, undeploy the Kubernetes Dashboard Helm Chart.</li>
-        <li>When done disconnect from the cluster.</li>
-    </ol>
+    <p>Execute to following steps to install Kubernetes Dashboard Helm Chart and use the Kubernetes Dashboard Web
+        UI:</p>
+    <h3>Connect to cluster</h3>
+    <ul>
+        <li>Connect to the cluster.
+            <br/>
+            <img src="connect.png" alt="Connect to cluster"/>
+        </li>
+    </ul>
+    <h3>After connected to cluster</h3>
+    <ul>
+        <li><img src="connected.png" alt="Connected to cluster"/></li>
+        <li style="margin-left: 0.3rem;">1 Prime the cluster. Creates <b>Service Account</b>, <b>Cluster Role Binding</b> and a (token) <b>Secret</b>
+            in <i>kubernetes-dashboard</i> namespace.
+        </li>
+        <li style="margin-left: 0.3rem;">2 Install the Kubernetes Dashboard Helm Chart to deploy <b>Kubernetes Dashboard</b> Web UI.</li>
+        <li style="margin-left: 0.3rem;">3 Port forward 8443:8443 from the Kubernetes Dashboard POD.</li>
+        <li style="margin-left: 0.3rem;">4 Open Kubernetes Dashboard in this tool window. This also copies the required token to the clipboard.</li>
+        <li style="margin-left: 1.1rem;">4.1 Copy the token to clipboard.</li>
+        <li>-2 Optionally, undeploy the Kubernetes Dashboard Helm Chart.</li>
+        <li style="margin-left: 1.1rem;">When done disconnect from the cluster.</li>
+    </ul>
 </div>
 </body>
 </html>

@@ -22,7 +22,56 @@ public class KubernetesDashboardAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent actionEvent) {
         Project project = actionEvent.getProject();
         ToolWindow toolWindow = ToolWindowManager.getInstance(Objects.requireNonNull(project)).getToolWindow("Kubernetes Dashboard");
-        Object selectedItem = actionEvent.getDataContext().getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        KubernetesObject kubernetesObject = getKubernetesObject(actionEvent.getDataContext().getData(PlatformCoreDataKeys.SELECTED_ITEM));
+        if (kubernetesObject != null) {
+            String namespace = kubernetesObject.getMetadata().getNamespace();
+            if (toolWindow == null) {
+                if (namespace == null) {
+                    Messages.showInfoMessage(String.format("%s : %s ", kubernetesObject.getMetadata().getName(), kubernetesObject.getKind()), "Resource");
+                } else {
+                    Messages.showInfoMessage(String.format("%s/%s: %s", namespace, kubernetesObject.getMetadata().getName(), kubernetesObject.getKind()), "Resource");
+                }
+            } else {
+                JBCefBrowser browser = (JBCefBrowser) Objects.requireNonNull(toolWindow.getContentManager().getContent(0)).getComponent().getClientProperty("browser");
+                if (browser != null) {
+                    String url = browser.getCefBrowser().getURL();
+                    if (KubernetesDashboardToolWindow.INDEX.equals(url)) {
+                        // Well dashboard not loaded
+                        Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                                "Load kubernetes dashboard",
+                                "Load kubernetes dashboard first.",
+                                NotificationType.ERROR);
+                        notification.notify(project);
+                    } else {
+                        if (namespace == null) {
+                            url = KubernetesDashboardToolWindow.KUBERNETES_DASHBOARD_URL_PREFIX + String.format("/#/%s/%s",
+                                    kubernetesObject.getKind().toLowerCase(),
+                                    kubernetesObject.getMetadata().getName());
+                        } else {
+                            url = KubernetesDashboardToolWindow.KUBERNETES_DASHBOARD_URL_PREFIX + String.format("/#/%s/%s/%s?namespace=%s",
+                                    kubernetesObject.getKind().toLowerCase(),
+                                    namespace,
+                                    kubernetesObject.getMetadata().getName(),
+                                    namespace);
+                        }
+                        browser.loadURL(url);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent actionEvent) {
+        actionEvent.getPresentation().setVisible(getKubernetesObject(actionEvent.getDataContext().getData(PlatformCoreDataKeys.SELECTED_ITEM)) != null);
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
+    }
+
+    private static KubernetesObject getKubernetesObject(Object selectedItem) {
         if (selectedItem != null) {
             Class<?> clazz = selectedItem.getClass();
             while ((clazz != null) && !clazz.getName().equals(Object.class.getName())) {
@@ -30,57 +79,12 @@ public class KubernetesDashboardAction extends AnAction {
                     Field resourceField = clazz.getDeclaredField("resource");
                     // Yay!
                     resourceField.setAccessible(true);
-                    KubernetesObject kubernetesObject = (KubernetesObject) resourceField.get(selectedItem);
-                    String namespace = kubernetesObject.getMetadata().getNamespace();
-                    if (toolWindow == null) {
-                        if (namespace == null) {
-                            Messages.showInfoMessage(String.format("%s : %s ", kubernetesObject.getMetadata().getName(), kubernetesObject.getKind()), "Resource");
-                        } else {
-                            Messages.showInfoMessage(String.format("%s/%s: %s", namespace, kubernetesObject.getMetadata().getName(), kubernetesObject.getKind()), "Resource");
-                        }
-                    } else {
-                        JBCefBrowser browser = (JBCefBrowser) Objects.requireNonNull(toolWindow.getContentManager().getContent(0)).getComponent().getClientProperty("browser");
-                        if (browser != null) {
-                            String url = browser.getCefBrowser().getURL();
-                            if (KubernetesDashboardToolWindow.INDEX.equals(url)) {
-                                // Well dashboard not loaded
-                                Notification notification = new Notification("kubernetesDashboardNotificationGroup",
-                                        "Load kubernetes dashboard",
-                                        "Load kubernetes dashboard first.",
-                                        NotificationType.ERROR);
-                                notification.notify(project);
-                            } else {
-                                if (namespace == null) {
-                                    url = KubernetesDashboardToolWindow.KUBERNETES_DASHBOARD_URL_PREFIX + String.format("/#/%s/%s",
-                                            kubernetesObject.getKind().toLowerCase(),
-                                            kubernetesObject.getMetadata().getName());
-                                } else {
-                                    url = KubernetesDashboardToolWindow.KUBERNETES_DASHBOARD_URL_PREFIX + String.format("/#/%s/%s/%s?namespace=%s",
-                                            kubernetesObject.getKind().toLowerCase(),
-                                            namespace,
-                                            kubernetesObject.getMetadata().getName(),
-                                            namespace);
-                                }
-                                browser.loadURL(url);
-                            }
-                        }
-                    }
-                    return;
+                    return (KubernetesObject) resourceField.get(selectedItem);
                 } catch (NoSuchFieldException | IllegalAccessException ignore) {
                 }
                 clazz = clazz.getSuperclass();
             }
         }
-    }
-
-    @Override
-    public void update(@NotNull AnActionEvent actionEvent) {
-        Object selectedItem = actionEvent.getDataContext().getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        actionEvent.getPresentation().setEnabled(selectedItem != null && selectedItem.getClass().getSimpleName().startsWith("Kubernetes"));
-    }
-
-    @Override
-    public @NotNull ActionUpdateThread getActionUpdateThread() {
-        return ActionUpdateThread.EDT;
+        return null;
     }
 }

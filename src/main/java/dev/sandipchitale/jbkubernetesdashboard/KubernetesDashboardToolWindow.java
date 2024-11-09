@@ -157,7 +157,7 @@ public class KubernetesDashboardToolWindow {
         topRightToolBar.add(deployKubernetesDashboardHelmChartButton);
 
         portForwardButton = new JButton("3", AllIcons.Actions.SwapPanels);
-        portForwardButton.setToolTipText("Port forwards 8443:8443");
+        portForwardButton.setToolTipText("Port forward 8443:443 to kubernetes-service");
         portForwardButton.addActionListener(this::portForward);
         topRightToolBar.add(portForwardButton);
 
@@ -328,7 +328,7 @@ public class KubernetesDashboardToolWindow {
             copyTokenToClipBoard(actionEvent);
             Notification notification = new Notification("kubernetesDashboardNotificationGroup",
                     "Loaded kubernetes dashboard in tool window",
-                    String.format("Loaded kubernetes dashboard using URL: ", KUBERNETES_DASHBOARD_URL),
+                    String.format("Loaded kubernetes dashboard using URL: %s. If you do not see it, please forward the port again.", KUBERNETES_DASHBOARD_URL),
                     NotificationType.INFORMATION);
             notification.notify(project);
         } else {
