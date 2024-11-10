@@ -31,6 +31,8 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -299,6 +301,14 @@ public class KubernetesDashboardToolWindow {
 
     private void portForward(ActionEvent actionEvent) {
         if (isConnected()) {
+            if (!portAvailable(8443)) {
+                Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                        "Port already forwarded",
+                        String.format("It appears that port 8443 is already forwarded to port 443 of service %s.", KUBERNETES_DASHBOARD),
+                        NotificationType.INFORMATION);
+                notification.notify(project);
+                return;
+            }
             ensureKubernetesDashboardNamespace();
             Service service = kubernetesClient.services().inNamespace(KUBERNETES_DASHBOARD).withName(KUBERNETES_DASHBOARD).get();
             if (service == null) {
@@ -398,6 +408,14 @@ public class KubernetesDashboardToolWindow {
                     "Not connected to the cluster! Connect first.",
                     NotificationType.ERROR);
             notification.notify(project);
+        }
+    }
+
+    private static boolean portAvailable(int port) throws IllegalStateException {
+        try (ServerSocket ignore = new ServerSocket(port)) {
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
 }
