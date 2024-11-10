@@ -14,6 +14,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.jcef.JBCefBrowser;
 import com.intellij.ui.jcef.JBCefClient;
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.authentication.TokenRequest;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
@@ -72,14 +73,14 @@ public class KubernetesDashboardToolWindow {
             "kubernetes-dashboard.tgz").toString();
 
     public static final String KUBERNETES_DASHBOARD = "kubernetes-dashboard";
-
+    public static final String KUBERNETES_DASHBOARD_SERVICE = KUBERNETES_DASHBOARD + "-kong-proxy";
 
     public static final String ADMIN_USER_SERVICE_ACCOUNT = "admin-user";
     public static final String ADMIN_USER_CLUSTER_ROLE_BINDING = "admin-user";
     public static final String ADMIN_USER_SECRET = "admin-user-secret";
 
     public static final String KUBERNETES_DASHBOARD_URL_PREFIX = "https://127.0.0.1:8443";
-    public static final String KUBERNETES_DASHBOARD_URL = KUBERNETES_DASHBOARD_URL_PREFIX + "/#/pod?namespace=" + KUBERNETES_DASHBOARD;
+    public static final String KUBERNETES_DASHBOARD_URL = KUBERNETES_DASHBOARD_URL_PREFIX + "/#/workloads?namespace=_all";
 
     private final JPanel contentToolWindow;
 
@@ -149,7 +150,7 @@ public class KubernetesDashboardToolWindow {
         topRightToolBar.add(connectToClusterButton);
 
         primeClusterButton = new JButton("1", AllIcons.Actions.Lightning);
-        primeClusterButton.setToolTipText("Prime Cluster with required Service Account, CLuster Role Binding and Secret");
+        primeClusterButton.setToolTipText("Prime Cluster with required Service Account, Cluster Role Binding and Secret");
         primeClusterButton.addActionListener(this::primeCluster);
         topRightToolBar.add(primeClusterButton);
 
@@ -159,7 +160,7 @@ public class KubernetesDashboardToolWindow {
         topRightToolBar.add(deployKubernetesDashboardHelmChartButton);
 
         portForwardButton = new JButton("3", AllIcons.Actions.SwapPanels);
-        portForwardButton.setToolTipText("Port forward 8443:443 to kubernetes-service");
+        portForwardButton.setToolTipText(String.format("Port forward 8443:443 to %s", KUBERNETES_DASHBOARD_SERVICE));
         portForwardButton.addActionListener(this::portForward);
         topRightToolBar.add(portForwardButton);
 
@@ -304,23 +305,23 @@ public class KubernetesDashboardToolWindow {
             if (!portAvailable(8443)) {
                 Notification notification = new Notification("kubernetesDashboardNotificationGroup",
                         "Port already forwarded",
-                        String.format("It appears that port 8443 is already forwarded to port 443 of service %s.", KUBERNETES_DASHBOARD),
+                        String.format("It appears that port 8443 is already forwarded to port 443 of service %s.", KUBERNETES_DASHBOARD_SERVICE),
                         NotificationType.INFORMATION);
                 notification.notify(project);
                 return;
             }
             ensureKubernetesDashboardNamespace();
-            Service service = kubernetesClient.services().inNamespace(KUBERNETES_DASHBOARD).withName(KUBERNETES_DASHBOARD).get();
+            Service service = kubernetesClient.services().inNamespace(KUBERNETES_DASHBOARD).withName(KUBERNETES_DASHBOARD_SERVICE).get();
             if (service == null) {
-                Messages.showErrorDialog("Cannot port forward as the service: " + KUBERNETES_DASHBOARD + " in namespace " + KUBERNETES_DASHBOARD + " is missing.",
+                Messages.showErrorDialog("Cannot port forward as the service: " + KUBERNETES_DASHBOARD_SERVICE + " in namespace " + KUBERNETES_DASHBOARD + " is missing.",
                         "Service Unavailable");
                 return;
             }
             // Port forward to service
-            CommandLauncher.launch("kubectl port-forward -n " + KUBERNETES_DASHBOARD + " service/" + KUBERNETES_DASHBOARD + " 8443:443");
+            CommandLauncher.launch("kubectl port-forward -n " + KUBERNETES_DASHBOARD + " service/" + KUBERNETES_DASHBOARD_SERVICE + " 8443:443");
             Notification notification = new Notification("kubernetesDashboardNotificationGroup",
                     "Port forwarded",
-                    String.format("Forwarded port 8443 to port 443 of service %s.", KUBERNETES_DASHBOARD),
+                    String.format("Forwarded port 8443 to port 443 of service %s.", KUBERNETES_DASHBOARD_SERVICE),
                     NotificationType.INFORMATION);
             notification.notify(project);
         } else {
@@ -361,6 +362,7 @@ public class KubernetesDashboardToolWindow {
     private void copyTokenToClipBoard(ActionEvent actionEvent) {
         if (isConnected()) {
             ensureKubernetesDashboardNamespace();
+            TokenRequest tokenRequest = kubernetesClient.serviceAccounts().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SERVICE_ACCOUNT).tokenRequest();
             Secret secret = kubernetesClient.secrets().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SECRET).get();
             if (secret == null) {
                 Messages.showErrorDialog("Cannot get token as the secret: " + ADMIN_USER_SECRET + " in namespace " + KUBERNETES_DASHBOARD + " is missing.",

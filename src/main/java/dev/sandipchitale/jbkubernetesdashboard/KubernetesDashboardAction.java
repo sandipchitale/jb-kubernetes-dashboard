@@ -43,15 +43,17 @@ public class KubernetesDashboardAction extends AnAction {
                                 NotificationType.ERROR);
                         notification.notify(project);
                     } else {
+                        String kind = kubernetesObject.getKind().toLowerCase();
+                        String name = kubernetesObject.getMetadata().getName();
                         if (namespace == null) {
-                            url = KubernetesDashboardToolWindow.KUBERNETES_DASHBOARD_URL_PREFIX + String.format("/#/%s/%s",
-                                    kubernetesObject.getKind().toLowerCase(),
-                                    kubernetesObject.getMetadata().getName());
+                            url = KubernetesDashboardToolWindow.KUBERNETES_DASHBOARD_URL_PREFIX + String.format("/#/%s/%s?namespace=_all",
+                                    kind,
+                                    name);
                         } else {
                             url = KubernetesDashboardToolWindow.KUBERNETES_DASHBOARD_URL_PREFIX + String.format("/#/%s/%s/%s?namespace=%s",
-                                    kubernetesObject.getKind().toLowerCase(),
+                                    kind,
                                     namespace,
-                                    kubernetesObject.getMetadata().getName(),
+                                    name,
                                     namespace);
                         }
                         browser.loadURL(url);
