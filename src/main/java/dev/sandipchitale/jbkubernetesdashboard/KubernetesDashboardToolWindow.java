@@ -334,6 +334,14 @@ public class KubernetesDashboardToolWindow {
 
     private void loadKubernetesDashboard(ActionEvent actionEvent) {
         if (isConnected()) {
+            if (portAvailable(8443)) {
+                Notification notification = new Notification("kubernetesDashboardNotificationGroup",
+                        "Port not forwarded",
+                        "It appears that port 8443 is not yet forwarded. Please make sure to forward it first.",
+                        NotificationType.ERROR);
+                notification.notify(project);
+                return;
+            }
             browser.loadURL(KUBERNETES_DASHBOARD_URL);
             copyTokenToClipBoard(actionEvent);
             Notification notification = new Notification("kubernetesDashboardNotificationGroup",
