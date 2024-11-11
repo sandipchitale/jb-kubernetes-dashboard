@@ -26,11 +26,12 @@
     <change-notes><![CDATA[
 <h2>New Features</h2>
 <ul>
-    <li>Integrate with <b>Kubernetes</b> extension tree nodes in Services tool window via <b>Show in Kubernetes Dashboard Web UI</b> action. <b>IMPORTANT: This action will not work if Kubernetes extension is not available.</b></li>
+    <li>Upgrade to Kubernetes Dashboard 7.10.0</li>
 </ul>
 <h2>Features</h2>
 <ul>
     <li>Load Kubernetes Dashboard in easy 5 steps.</li>
+    <li>Integrate with <b>Kubernetes</b> extension tree nodes in Services tool window via <b>Show in Kubernetes Dashboard Web UI</b> action. <b>IMPORTANT: This action will not work if Kubernetes extension is not available.</b></li>
 </ul>
 <h2>Known Issues</h2>
 <ul>
