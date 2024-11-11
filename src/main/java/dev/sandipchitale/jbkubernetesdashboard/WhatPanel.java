@@ -29,6 +29,8 @@ public class WhatPanel extends BorderLayoutPanel {
 
         JPanel whatCheckBoxesPanel = new JPanel(new GridLayout(0, 1, 5, 5));
 
+        whatCheckBoxesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
+
         whatPanel.add(whatCheckBoxesPanel, BorderLayout.EAST);
 
         whatPanel.allCheckBox = new JCheckBox(Constants.ALL, true);
