@@ -14,7 +14,6 @@ import com.intellij.ui.jcef.JBCefBrowser;
 import io.kubernetes.client.common.KubernetesObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.Objects;
 
 public class KubernetesDashboardAction extends AnAction {
@@ -22,7 +21,7 @@ public class KubernetesDashboardAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent actionEvent) {
         Project project = actionEvent.getProject();
         ToolWindow toolWindow = ToolWindowManager.getInstance(Objects.requireNonNull(project)).getToolWindow("Kubernetes Dashboard");
-        KubernetesObject kubernetesObject = getKubernetesObject(actionEvent.getDataContext().getData(PlatformCoreDataKeys.SELECTED_ITEM));
+        KubernetesObject kubernetesObject = Utils.getKubernetesObject(actionEvent.getDataContext().getData(PlatformCoreDataKeys.SELECTED_ITEM));
         if (kubernetesObject != null) {
             String namespace = kubernetesObject.getMetadata().getNamespace();
             if (toolWindow == null) {
@@ -65,28 +64,11 @@ public class KubernetesDashboardAction extends AnAction {
 
     @Override
     public void update(@NotNull AnActionEvent actionEvent) {
-        actionEvent.getPresentation().setVisible(getKubernetesObject(actionEvent.getDataContext().getData(PlatformCoreDataKeys.SELECTED_ITEM)) != null);
+        actionEvent.getPresentation().setVisible(Utils.getKubernetesObject(actionEvent.getDataContext().getData(PlatformCoreDataKeys.SELECTED_ITEM)) != null);
     }
 
     @Override
     public @NotNull ActionUpdateThread getActionUpdateThread() {
         return ActionUpdateThread.EDT;
-    }
-
-    private static KubernetesObject getKubernetesObject(Object selectedItem) {
-        if (selectedItem != null) {
-            Class<?> clazz = selectedItem.getClass();
-            while ((clazz != null) && !clazz.getName().equals(Object.class.getName())) {
-                try {
-                    Field resourceField = clazz.getDeclaredField("resource");
-                    // Yay!
-                    resourceField.setAccessible(true);
-                    return (KubernetesObject) resourceField.get(selectedItem);
-                } catch (NoSuchFieldException | IllegalAccessException ignore) {
-                }
-                clazz = clazz.getSuperclass();
-            }
-        }
-        return null;
     }
 }

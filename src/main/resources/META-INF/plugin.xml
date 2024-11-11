@@ -26,10 +26,11 @@
     <change-notes><![CDATA[
 <h2>New Features</h2>
 <ul>
-    <li>Upgrade to Kubernetes Dashboard 7.10.0</li>
+    <li>Support <b>Helm Get...</b> action on secrets of the form <b>sh.helm.release.v1.kubernetes-dashboard.v1</b> in which Helm stores information about Helm release and revision</li>
 </ul>
 <h2>Features</h2>
 <ul>
+    <li>Upgrade to Kubernetes Dashboard 7.10.0</li>
     <li>Load Kubernetes Dashboard in easy 5 steps.</li>
     <li>Integrate with <b>Kubernetes</b> extension tree nodes in Services tool window via <b>Show in Kubernetes Dashboard Web UI</b> action. <b>IMPORTANT: This action will not work if Kubernetes extension is not available.</b></li>
 </ul>
@@ -64,6 +65,11 @@
                 id="ShowInKubernetesDashboard"
                 text="Show in Kubernetes Dashboard Web UI">
             <add-to-group group-id="ServiceViewItemPopup" anchor="last"/>
+        </action>
+        <action class="dev.sandipchitale.jbkubernetesdashboard.HelmGetAction"
+                id="HelmGetAction"
+                text="Helm Get...">
+            <add-to-group group-id="ServiceViewItemPopup" anchor="after" relative-to-action="ShowInKubernetesDashboard"/>
         </action>
     </actions>
 </idea-plugin>
