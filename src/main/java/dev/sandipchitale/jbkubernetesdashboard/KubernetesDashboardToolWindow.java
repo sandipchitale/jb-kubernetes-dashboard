@@ -18,8 +18,12 @@ import io.fabric8.kubernetes.api.model.authentication.TokenRequest;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
+import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.callback.CefCallback;
+import org.cef.handler.CefDisplayHandler;
+import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefRequestHandlerAdapter;
 import org.cef.security.CefSSLInfo;
@@ -80,7 +84,7 @@ public class KubernetesDashboardToolWindow {
     public static final String ADMIN_USER_SECRET = "admin-user-secret";
 
     public static final String KUBERNETES_DASHBOARD_URL_PREFIX = "https://127.0.0.1:8443";
-    public static final String KUBERNETES_DASHBOARD_URL = KUBERNETES_DASHBOARD_URL_PREFIX + "/#/deployment?namespace=" + KUBERNETES_DASHBOARD;
+    public static final String KUBERNETES_DASHBOARD_URL = KUBERNETES_DASHBOARD_URL_PREFIX + "/#/workloads?namespace=_all";
 
     private final JPanel contentToolWindow;
 
@@ -131,6 +135,24 @@ public class KubernetesDashboardToolWindow {
                     return true;
                 }
                 return super.onCertificateError(browser, cert_error, request_url, sslInfo, callback);
+            }
+        }, browser.getCefBrowser());
+
+        jbCefClient.addDisplayHandler(new CefDisplayHandlerAdapter() {
+            private boolean loginSeen = false;
+            @Override
+            public void onAddressChange(CefBrowser browser, CefFrame frame, String url) {
+                if (url.endsWith("/#/login")) {
+                    loginSeen = true;
+                }
+                if (loginSeen && !url.endsWith("/#/login")) {
+                    loginSeen = false;
+                    Timer timer = new Timer(1000, e -> {
+                        browser.loadURL(KUBERNETES_DASHBOARD_URL);
+                    });
+                    timer.setRepeats(false);
+                    timer.start();
+                }
             }
         }, browser.getCefBrowser());
 
