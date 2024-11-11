@@ -80,7 +80,7 @@ public class KubernetesDashboardToolWindow {
     public static final String ADMIN_USER_SECRET = "admin-user-secret";
 
     public static final String KUBERNETES_DASHBOARD_URL_PREFIX = "https://127.0.0.1:8443";
-    public static final String KUBERNETES_DASHBOARD_URL = KUBERNETES_DASHBOARD_URL_PREFIX + "/#/workloads?namespace=_all";
+    public static final String KUBERNETES_DASHBOARD_URL = KUBERNETES_DASHBOARD_URL_PREFIX + "/#/deployment?namespace=" + KUBERNETES_DASHBOARD;
 
     private final JPanel contentToolWindow;
 
