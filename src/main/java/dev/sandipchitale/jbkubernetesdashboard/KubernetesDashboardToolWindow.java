@@ -37,6 +37,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -444,7 +445,7 @@ public class KubernetesDashboardToolWindow {
     }
 
     private static boolean portAvailable(int port) throws IllegalStateException {
-        try (ServerSocket ignore = new ServerSocket(port)) {
+        try (ServerSocket ignore = new ServerSocket(port, 50, InetAddress.getLoopbackAddress())) {
             return true;
         } catch (IOException e) {
             return false;
