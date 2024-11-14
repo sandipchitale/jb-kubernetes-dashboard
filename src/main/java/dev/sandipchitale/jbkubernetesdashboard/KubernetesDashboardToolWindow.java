@@ -14,15 +14,12 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.jcef.JBCefBrowser;
 import com.intellij.ui.jcef.JBCefClient;
 import io.fabric8.kubernetes.api.model.*;
-import io.fabric8.kubernetes.api.model.authentication.TokenRequest;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
-import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.callback.CefCallback;
-import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefRequestHandlerAdapter;
@@ -141,6 +138,7 @@ public class KubernetesDashboardToolWindow {
 
         jbCefClient.addDisplayHandler(new CefDisplayHandlerAdapter() {
             private boolean loginSeen = false;
+
             @Override
             public void onAddressChange(CefBrowser browser, CefFrame frame, String url) {
                 if (url.endsWith("/#/login")) {
@@ -385,7 +383,6 @@ public class KubernetesDashboardToolWindow {
     private void copyTokenToClipBoard(ActionEvent actionEvent) {
         if (isConnected()) {
             ensureKubernetesDashboardNamespace();
-            TokenRequest tokenRequest = kubernetesClient.serviceAccounts().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SERVICE_ACCOUNT).tokenRequest();
             Secret secret = kubernetesClient.secrets().inNamespace(KUBERNETES_DASHBOARD).withName(ADMIN_USER_SECRET).get();
             if (secret == null) {
                 Messages.showErrorDialog("Cannot get token as the secret: " + ADMIN_USER_SECRET + " in namespace " + KUBERNETES_DASHBOARD + " is missing.",

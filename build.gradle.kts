@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.sandipchitale"
-version = "1.0.21"
+version = "1.0.23"
 
 repositories {
     mavenCentral()
@@ -54,7 +54,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("232")
-        untilBuild.set("242.*")
+        untilBuild.set("243.*")
     }
 
     signPlugin {
