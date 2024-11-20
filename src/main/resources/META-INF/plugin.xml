@@ -26,7 +26,11 @@
     <change-notes><![CDATA[
 <h2>New Features</h2>
 <ul>
-    <li>Support <b>Helm Get...</b> action on secrets of the form <b>sh.helm.release.v1.kubernetes-dashboard.v1</b> in which Helm stores information about Helm release and revision</li>
+    <li>MOVED: Support <b>Helm Get...</b> action on secrets of the form
+        <b>sh.helm.release.v1.kubernetes-dashboard.v1</b> in which Helm
+        stores information about Helm release and revision to
+        <a href="https://plugins.jetbrains.com/plugin/22654-helmet">Helmet</a>
+        plugin</li>
 </ul>
 <h2>Features</h2>
 <ul>
@@ -65,11 +69,6 @@
                 id="ShowInKubernetesDashboard"
                 text="Show in Kubernetes Dashboard Web UI">
             <add-to-group group-id="ServiceViewItemPopup" anchor="last"/>
-        </action>
-        <action class="dev.sandipchitale.jbkubernetesdashboard.HelmGetAction"
-                id="HelmGetAction"
-                text="Helm Get...">
-            <add-to-group group-id="ServiceViewItemPopup" anchor="after" relative-to-action="ShowInKubernetesDashboard"/>
         </action>
     </actions>
 </idea-plugin>

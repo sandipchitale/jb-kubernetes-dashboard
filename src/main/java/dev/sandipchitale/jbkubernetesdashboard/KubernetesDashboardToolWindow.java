@@ -1,5 +1,6 @@
 package dev.sandipchitale.jbkubernetesdashboard;
 
+import com.intellij.execution.services.ServiceViewManager;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.notification.Notification;
@@ -217,6 +218,7 @@ public class KubernetesDashboardToolWindow {
     }
 
     private void connectToCluster(ActionEvent actionEvent) {
+        ServiceViewManager serviceViewManager = ServiceViewManager.getInstance(project);
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             ApplicationManager.getApplication().runReadAction(() -> {
                 try {
